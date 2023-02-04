@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib        as mpl
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 import cartopy.crs as ccrs
@@ -10,6 +11,15 @@ from cartopy.io.shapereader import Reader
 from shapely.geometry.polygon import Polygon
 from cartopy.feature import ShapelyFeature
 from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
+
+# colormap
+upper = mpl.cm.jet(np.arange(256))
+lower = np.ones((int(256/4),4))
+for i in range(3):
+  lower[:,i] = np.linspace(1, upper[0,i], lower.shape[0])
+cmap = np.vstack(( lower, upper ))
+cmap = mpl.colors.ListedColormap(cmap, name='myColorMap', N=cmap.shape[0])
+clev = np.arange(0,1.1,0.1)
 
 # open the netCDF file
 ds = xr.open_dataset('soda3.3.2_cl_uvw_reg_1980-2018.nc')
@@ -31,6 +41,8 @@ ax = fig.add_subplot(1,1,1,projection=ccrs.PlateCarree())
 ax.set_extent([-50,-10,-30,10], crs=ccrs.PlateCarree())
 ax.add_feature(cfeature.COASTLINE)
 ax.add_feature(cfeature.BORDERS, linestyle='-', alpha=.5)
+shape_feature = ShapelyFeature(Reader(shpname).geometries(),ccrs.PlateCarree(), edgecolor='black')
+ax.add_feature(shape_feature, linestyle='-', alpha=.5, facecolor='w')
 gl = ax.gridlines(crs=ccrs.PlateCarree(), draw_labels=True,
                   linewidth=1, color='gray', alpha=0.5, linestyle='--')
 gl.top_labels = False
@@ -41,12 +53,16 @@ gl.xlocator = mticker.FixedLocator([-45,-35,-25,-15])
 gl.xformatter = LONGITUDE_FORMATTER
 gl.yformatter = LATITUDE_FORMATTER
 ax.set_title('JULY')
-hcb = ax.contourf(x,y,ww,cmap='viridis')
-hst = ax.streamplot(x,y,uu,vv,color='w',arrowstyle='-',density=3,linewidth=0.5)
-shape_feature = ShapelyFeature(Reader(shpname).geometries(),ccrs.PlateCarree(), edgecolor='black')
-ax.add_feature(shape_feature, linestyle='-', alpha=.5, facecolor='w')
+
+#hst = ax.streamplot(x,y,uu,vv,color=ww,cmap=cmap,arrowstyle='wedge',density=3,linewidth=1)
+#cbar = fig.colorbar(hst.lines)
+
+hcb = ax.contourf(x,y,ww,levels=clev,cmap=cmap,extend='both')
+hst = ax.streamplot(x,y,uu,vv,color='k',arrowstyle='wedge',density=3,linewidth=0.5)
 cbar = fig.colorbar(hcb)
+
 cbar.ax.set_ylabel('Current Velocity [m/s]')
+plt.savefig('soda_clim_jul.png',dpi=300,bbox_inches='tight')
 plt.show()
 
 uu = u[10,0,:,:].values
@@ -58,6 +74,8 @@ ax = fig.add_subplot(1,1,1,projection=ccrs.PlateCarree())
 ax.set_extent([-50,-10,-30,10], crs=ccrs.PlateCarree())
 ax.add_feature(cfeature.COASTLINE)
 ax.add_feature(cfeature.BORDERS, linestyle='-', alpha=.5)
+shape_feature = ShapelyFeature(Reader(shpname).geometries(),ccrs.PlateCarree(), edgecolor='black')
+ax.add_feature(shape_feature, linestyle='-', alpha=.5, facecolor='w')
 gl = ax.gridlines(crs=ccrs.PlateCarree(), draw_labels=True,
                   linewidth=1, color='gray', alpha=0.5, linestyle='--')
 gl.top_labels = False
@@ -68,10 +86,14 @@ gl.xlocator = mticker.FixedLocator([-45,-35,-25,-15])
 gl.xformatter = LONGITUDE_FORMATTER
 gl.yformatter = LATITUDE_FORMATTER
 ax.set_title('NOVEMBER')
-hcb = ax.contourf(x,y,ww,cmap='viridis')
-hst = ax.streamplot(x,y,uu,vv,color='w',arrowstyle='-',density=3,linewidth=0.5)
-shape_feature = ShapelyFeature(Reader(shpname).geometries(),ccrs.PlateCarree(), edgecolor='black')
-ax.add_feature(shape_feature, linestyle='-', alpha=.5, facecolor='w')
+
+#hst = ax.streamplot(x,y,uu,vv,color=ww,cmap=cmap,arrowstyle='wedge',density=3,linewidth=1)
+#cbar = fig.colorbar(hst.lines)
+
+hcb = ax.contourf(x,y,ww,levels=clev,cmap=cmap,extend='both')
+hst = ax.streamplot(x,y,uu,vv,color='k',arrowstyle='wedge',density=3,linewidth=0.5)
 cbar = fig.colorbar(hcb)
+
 cbar.ax.set_ylabel('Current Velocity [m/s]')
+plt.savefig('soda_clim_nov.png',dpi=300,bbox_inches='tight')
 plt.show()
