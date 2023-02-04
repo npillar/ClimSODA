@@ -62,7 +62,7 @@ hst = ax.streamplot(x,y,uu,vv,color='k',arrowstyle='wedge',density=3,linewidth=0
 cbar = fig.colorbar(hcb)
 
 cbar.ax.set_ylabel('Current Velocity [m/s]')
-plt.savefig('soda_clim_jul.png',dpi=300,bbox_inches='tight')
+plt.savefig('soda_clim_jul.tif',dpi=300,bbox_inches='tight')
 plt.show()
 
 uu = u[10,0,:,:].values
@@ -95,5 +95,5 @@ hst = ax.streamplot(x,y,uu,vv,color='k',arrowstyle='wedge',density=3,linewidth=0
 cbar = fig.colorbar(hcb)
 
 cbar.ax.set_ylabel('Current Velocity [m/s]')
-plt.savefig('soda_clim_nov.png',dpi=300,bbox_inches='tight')
+plt.savefig('soda_clim_nov.tif',dpi=300,bbox_inches='tight')
 plt.show()
